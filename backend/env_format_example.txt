@@ -1,0 +1,18 @@
+# Correct .env format - NO QUOTES around values
+
+# ✅ CORRECT - No quotes
+OPENAI_API_KEY=sk-proj-abc123def456ghi78
+GEMINI_API_KEY=AIzaSy
+NOVITA_API_KEY=your_novita_api_key_here
+DATABASE_URL=postgresql://postgres:password@
+
+# ❌ WRONG - Don't use quotes
+# OPENAI_API_KEY="sk-proj-abc123def456ghi789"
+# GEMINI_API_KEY="AIza"
+
+# Environment variables are loaded as strings by default
+# Quotes would be included as part of the value
+
+# Novita API for PaddleOCR-VL (table/formula/chart recognition)
+# Get your API key from: https://novita.ai/
+# NOVITA_BASE_URL is optional, defaults to https://api.novita.ai/openai if not provided
