@@ -31,13 +31,20 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Assesly AI Grading Backend...")
     
     try:
+        # Test database connection first
+        logger.info("Testing database connection...")
+        with engine.connect() as conn:
+            logger.info("Database connection successful")
+        
         # Create database tables
         logger.info("Creating database tables...")
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables created successfully")
     except Exception as e:
-        logger.error(f"Failed to create database tables: {e}")
-        logger.warning("Continuing startup despite database error...")
+        logger.error(f"Database connection failed: {e}")
+        logger.error("Please check your DATABASE_URL and database credentials")
+        logger.warning("Application will start but database features will not work")
+        # Don't raise - let the app start so we can see the error
     
     try:
         # Connect to Redis
@@ -108,9 +115,17 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
+    # Test database connection
+    db_status = "disconnected"
+    try:
+        with engine.connect() as conn:
+            db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)[:50]}"
+    
     return {
-        "status": "healthy",
-        "database": "connected",
+        "status": "healthy" if db_status == "connected" else "degraded",
+        "database": db_status,
         "redis": "connected" if redis_client.redis else "disconnected"
     }
 
