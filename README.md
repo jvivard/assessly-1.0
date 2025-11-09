@@ -8,7 +8,7 @@ An intelligent grading system that automates the assessment of student worksheet
 ## 🌟 Features
 
 - **📄 Multi-Format Support**: Upload PDFs and images for questions, rubrics, and student work
-- **🔍 Advanced OCR**: Extract text using GPT-4 Vision for mathematical content and Google Cloud Vision for text
+- **🔍 Advanced OCR**: Extract text using GPT-4 Vision for mathematical content and PaddleOCR-VL for text
 - **📋 Smart Rubric Parsing**: AI-powered rubric extraction and structured JSON conversion
 - **🎓 Dual AI Grading Engine**: 
   - GPT-4o for mathematical problems (high accuracy)
