@@ -24,20 +24,26 @@ steps:
     id: 'push-backend'
     waitFor: ['build-backend']
 
-  # Deploy backend (optional - remove if deploying manually)
-  # NOTE: Set environment variables and secrets in Cloud Run service directly via web UI
-  # Or uncomment the lines below to set them during deployment
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'assessly-backend'
-      - '--image=gcr.io/$PROJECT_ID/assessly-backend'
-      - '--platform=managed'
-      - '--region=us-central1'
-      - '--allow-unauthenticated'
-    id: 'deploy-backend'
-    waitFor: ['push-backend']
+  # Deploy backend (commented out - deploy manually via Cloud Run console)
+  # NOTE: Deploy manually to avoid permission issues and set environment variables
+  # After image is built, go to Cloud Run console and deploy with environment variables
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args:
+  #     - 'run'
+  #     - 'deploy'
+  #     - 'assessly-backend'
+  #     - '--image=gcr.io/$PROJECT_ID/assessly-backend'
+  #     - '--platform=managed'
+  #     - '--region=us-central1'
+  #     - '--allow-unauthenticated'
+  #     - '--memory=2Gi'
+  #     - '--cpu=2'
+  #     - '--timeout=300'
+  #     - '--max-instances=10'
+  #     - '--min-instances=0'
+  #     - '--port=8000'
+  #   id: 'deploy-backend'
+  #   waitFor: ['push-backend']
 
   # Build frontend image
   - name: 'gcr.io/cloud-builders/docker'
@@ -57,18 +63,23 @@ steps:
     id: 'push-frontend'
     waitFor: ['build-frontend']
 
-  # Deploy frontend (optional - remove if deploying manually)
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'run'
-      - 'deploy'
-      - 'assessly-frontend'
-      - '--image=gcr.io/$PROJECT_ID/assessly-frontend'
-      - '--platform=managed'
-      - '--region=us-central1'
-      - '--allow-unauthenticated'
-    id: 'deploy-frontend'
-    waitFor: ['push-frontend']
+  # Deploy frontend (commented out - deploy manually via Cloud Run console)
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args:
+  #     - 'run'
+  #     - 'deploy'
+  #     - 'assessly-frontend'
+  #     - '--image=gcr.io/$PROJECT_ID/assessly-frontend'
+  #     - '--platform=managed'
+  #     - '--region=us-central1'
+  #     - '--allow-unauthenticated'
+  #     - '--memory=1Gi'
+  #     - '--cpu=1'
+  #     - '--timeout=60'
+  #     - '--max-instances=10'
+  #     - '--min-instances=0'
+  #   id: 'deploy-frontend'
+  #   waitFor: ['push-frontend']
 
 images:
   - 'gcr.io/$PROJECT_ID/assessly-backend'
