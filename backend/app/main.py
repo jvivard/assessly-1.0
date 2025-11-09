@@ -30,13 +30,23 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Assesly AI Grading Backend...")
     
-    # Create database tables
-    logger.info("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
+    try:
+        # Create database tables
+        logger.info("Creating database tables...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Failed to create database tables: {e}")
+        logger.warning("Continuing startup despite database error...")
     
-    # Connect to Redis
-    logger.info("Connecting to Redis...")
-    await redis_client.connect()
+    try:
+        # Connect to Redis
+        logger.info("Connecting to Redis...")
+        await redis_client.connect()
+        logger.info("Redis connected successfully")
+    except Exception as e:
+        logger.warning(f"Failed to connect to Redis: {e}")
+        logger.warning("Continuing startup without Redis...")
     
     logger.info("Application started successfully!")
     
@@ -44,7 +54,10 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("Shutting down...")
-    await redis_client.disconnect()
+    try:
+        await redis_client.disconnect()
+    except Exception:
+        pass
     logger.info("Application stopped")
 
 
