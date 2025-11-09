@@ -3,12 +3,13 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (bash is needed for startup script)
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     postgresql-client \
     poppler-utils \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
@@ -33,6 +34,6 @@ RUN chmod +x /app/start.sh
 ENV PORT=8000
 EXPOSE 8000
 
-# Use startup script to handle PORT variable
-CMD ["/app/start.sh"]
+# Use startup script to handle PORT variable (use bash explicitly)
+CMD ["/bin/bash", "/app/start.sh"]
 
