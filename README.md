@@ -24,6 +24,8 @@ An intelligent grading system that automates the assessment of student worksheet
 - **📈 Task Monitoring**: Flower dashboard for job monitoring
 - **🎨 Modern UI**: Next.js frontend with Tailwind CSS and shadcn/ui components
 
+- <img width="1742" height="955" alt="Screenshot 2025-10-27 030429" src="https://github.com/user-attachments/assets/13213ccf-6b5e-4604-9633-23f73dbb0dee" />
+
 ## 🛠️ Tech Stack
 
 ### Frontend
