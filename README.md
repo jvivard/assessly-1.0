@@ -6,6 +6,8 @@ An intelligent grading system that automates the assessment of student worksheet
 ![License](https://img.shields.io/badge/License-MIT-blue)
 <img width="1813" height="700" alt="Screenshot 2025-10-27 030339" src="https://github.com/user-attachments/assets/cf31f9ba-3550-4640-8183-e00087f7aa49" />
 
+<img width="1868" height="942" alt="Screenshot 2025-10-27 030327" src="https://github.com/user-attachments/assets/a956514d-b82c-4841-9b7b-5f9970bc5301" />
+
 
 ## 🌟 Features
 
