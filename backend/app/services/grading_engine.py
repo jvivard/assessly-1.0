@@ -17,19 +17,19 @@ class GradingEngine:
     def __init__(self):
         self.openai_client = OpenAI(api_key=settings.openai_api_key)
         
-        # Initialize Gemini only if API key is provided (optional)
+        # Initialize Gemini API (Primary Model)
         self.gemini_available = False
         if settings.gemini_api_key and settings.gemini_api_key.strip():
             try:
                 genai.configure(api_key=settings.gemini_api_key)
                 self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
                 self.gemini_available = True
-                logger.info("Gemini API initialized successfully")
+                logger.info("Gemini API initialized successfully (Primary Model)")
             except Exception as e:
-                logger.warning(f"Failed to initialize Gemini API: {e}. Will use GPT-4o for all grading.")
+                logger.warning(f"Failed to initialize Gemini API: {e}. Will fall back to GPT-4o.")
                 self.gemini_available = False
         else:
-            logger.info("Gemini API key not provided. Will use GPT-4o for all grading.")
+            logger.warning("Gemini API key not provided. Using GPT-4o as fallback.")
     
     async def grade_math_question(
         self,
@@ -57,14 +57,37 @@ class GradingEngine:
             logger.debug(f"Formatted rubric criteria preview: {criteria_str[:500]}...")
             
             # Build prompt
+            # Primary: Try Gemini 2.0 Flash first
+            if self.gemini_available:
+                try:
+                    logger.info(f"Grading math question with Gemini 2.0 Flash (Question: {question_text[:50]}...)")
+                    # Prepare prompt for Gemini
+                    gemini_prompt = MATH_GRADING_PROMPT.format(
+                        question_text=question_text,
+                        rubric_criteria=criteria_str,
+                        student_work=student_work,
+                        max_points=max_points
+                    )
+                    
+                    if student_work_image_path:
+                         result = await self._grade_with_gemini_vision(gemini_prompt, student_work_image_path, max_points)
+                    else:
+                         result = await self._grade_with_gemini_text(gemini_prompt, max_points)
+                         
+                    logger.info(f"Math grading completed (Gemini): {result['score']}/{max_points}")
+                    return result
+                except Exception as e:
+                    logger.error(f"Gemini grading failed: {e}. Falling back to GPT-4o.")
+            
+            # Fallback: GPT-4o
+            logger.info("Using GPT-4o for math grading (Fallback)")
             prompt = MATH_GRADING_PROMPT.format(
                 question_text=question_text,
                 rubric_criteria=criteria_str,
                 student_work=student_work,
                 max_points=max_points
             )
-            
-            # If we have an image, use vision model
+
             if student_work_image_path:
                 result = await self._grade_with_vision(
                     prompt,
@@ -178,6 +201,44 @@ class GradingEngine:
         )
         
         result = json.loads(response.choices[0].message.content)
+        self._validate_grading_result(result, max_points)
+        return result
+
+    async def _grade_with_gemini_text(self, prompt: str, max_points: float) -> Dict[str, Any]:
+        """Grade using Gemini 2.0 Flash text-only mode."""
+        # Config for JSON response
+        generation_config = genai.GenerationConfig(
+            temperature=0.2,
+            response_mime_type="application/json"
+        )
+        
+        response = self.gemini_model.generate_content(
+            prompt,
+            generation_config=generation_config
+        )
+        
+        result = json.loads(response.text)
+        self._validate_grading_result(result, max_points)
+        return result
+
+    async def _grade_with_gemini_vision(self, prompt: str, image_path: str, max_points: float) -> Dict[str, Any]:
+        """Grade using Gemini 2.0 Flash Vision."""
+        import PIL.Image
+        
+        # Load image for Gemini
+        img = PIL.Image.open(image_path)
+        
+        generation_config = genai.GenerationConfig(
+            temperature=0.2,
+            response_mime_type="application/json"
+        )
+        
+        response = self.gemini_model.generate_content(
+            [prompt, img],
+            generation_config=generation_config
+        )
+        
+        result = json.loads(response.text)
         self._validate_grading_result(result, max_points)
         return result
     
