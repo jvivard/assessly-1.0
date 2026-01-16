@@ -1,0 +1,48 @@
+services:
+  # Python Backend Service
+  - type: web
+    name: assessly-backend
+    runtime: docker
+    repo: https://github.com/jvivard/assessly # Change this to your repo URL if you forked it
+    region: ohio # Render's US-East region (closest to Neon AWS us-east-1)
+    plan: free # Use Render's free tier
+    
+    # Environment Variables to be prompted in Render Dashboard
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromGroup: assessly-settings
+      - key: REDIS_URL
+        fromGroup: assessly-settings
+      - key: OPENAI_API_KEY
+        fromGroup: assessly-settings
+      - key: GEMINI_API_KEY
+        fromGroup: assessly-settings
+      - key: NOVITA_API_KEY
+        fromGroup: assessly-settings
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_ORIGINS
+        value: "https://assessly.xyz,https://www.assessly.xyz"
+        
+    # Build Command (optional if Dockerfile is perfect, but good to specify context)
+    rootDir: backend
+    dockerCommand: ./start.sh
+    healthCheckPath: /health
+
+envVarGroups:
+  - name: assessly-settings
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NOVITA_API_KEY
+        sync: false
