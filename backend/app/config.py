@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     novita_api_key: str = Field(..., alias="NOVITA_API_KEY")
     novita_base_url: str = Field(default="https://api.novita.ai/openai", alias="NOVITA_BASE_URL")
     
+    # OpenRouter (Hybrid AI)
+    openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
+    site_url: str = Field(default="https://assessly.xyz", alias="SITE_URL")
+    site_name: str = Field(default="Assessly", alias="SITE_NAME")
+    
     # Database
     database_url: str = Field(..., alias="DATABASE_URL")
     

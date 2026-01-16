@@ -14,22 +14,37 @@ from app.services.ocr_service import ocr_service
 class GradingEngine:
     """Grade student work using AI models."""
     
-    def __init__(self):
-        self.openai_client = OpenAI(api_key=settings.openai_api_key)
+        # Initialize AI Client (OpenRouter or Direct)
+        self.using_openrouter = False
         
-        # Initialize Gemini API (Primary Model)
-        self.gemini_available = False
-        if settings.gemini_api_key and settings.gemini_api_key.strip():
-            try:
-                genai.configure(api_key=settings.gemini_api_key)
-                self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
-                self.gemini_available = True
-                logger.info("Gemini API initialized successfully (Primary Model)")
-            except Exception as e:
-                logger.warning(f"Failed to initialize Gemini API: {e}. Will fall back to GPT-4o.")
-                self.gemini_available = False
+        if settings.openrouter_api_key:
+            logger.info("Initializing OpenRouter client (Hybrid AI Mode)")
+            self.openai_client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=settings.openrouter_api_key,
+                default_headers={
+                    "HTTP-Referer": settings.site_url,
+                    "X-Title": settings.site_name,
+                }
+            )
+            self.using_openrouter = True
+            self.gemini_available = True # OpenRouter provides Gemini
+            logger.info("OpenRouter initialized successfully")
         else:
-            logger.warning("Gemini API key not provided. Using GPT-4o as fallback.")
+            logger.info("Using direct OpenAI API key")
+            self.openai_client = OpenAI(api_key=settings.openai_api_key)
+            
+            # Initialize direct Gemini API if not using OpenRouter
+            self.gemini_available = False
+            if settings.gemini_api_key and settings.gemini_api_key.strip():
+                try:
+                    genai.configure(api_key=settings.gemini_api_key)
+                    self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
+                    self.gemini_available = True
+                    logger.info("Direct Gemini API initialized successfully")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize direct Gemini API: {e}")
+                    self.gemini_available = False
     
     async def grade_math_question(
         self,
@@ -153,17 +168,23 @@ class GradingEngine:
         self,
         prompt: str,
         image_path: str,
-        max_points: float
+        max_points: float,
+        model_override: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Grade using GPT-4 Vision (for handwritten math work)."""
+        """Grade using GPT-4 Vision (or override model)."""
         import base64
+        
+        # Determine model
+        model = model_override
+        if not model:
+            model = "openai/gpt-4o" if self.using_openrouter else "gpt-4o"
         
         # Encode image
         with open(image_path, "rb") as image_file:
             base64_image = base64.b64encode(image_file.read()).decode('utf-8')
         
         response = self.openai_client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=[
                 {
                     "role": "user",
@@ -188,10 +209,16 @@ class GradingEngine:
         self._validate_grading_result(result, max_points)
         return result
     
-    async def _grade_with_text(self, prompt: str, max_points: float) -> Dict[str, Any]:
-        """Grade using GPT-4o text-only mode."""
+    async def _grade_with_text(self, prompt: str, max_points: float, model_override: Optional[str] = None) -> Dict[str, Any]:
+        """Grade using GPT-4o text-only mode (or override model)."""
+        
+        # Determine model
+        model = model_override
+        if not model:
+             model = "openai/gpt-4o" if self.using_openrouter else "gpt-4o"
+
         response = self.openai_client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=[
                 {"role": "user", "content": prompt}
             ],
@@ -206,7 +233,14 @@ class GradingEngine:
 
     async def _grade_with_gemini_text(self, prompt: str, max_points: float) -> Dict[str, Any]:
         """Grade using Gemini 2.0 Flash text-only mode."""
-        # Config for JSON response
+        
+        # OpenRouter Path
+        if self.using_openrouter:
+            model_id = "google/gemini-2.0-flash-exp:free"
+            logger.info(f"Using OpenRouter with model: {model_id}")
+            return await self._grade_with_text(prompt, max_points, model_override=model_id)
+
+        # Direct Google SDK Path
         generation_config = genai.GenerationConfig(
             temperature=0.2,
             response_mime_type="application/json"
@@ -223,6 +257,14 @@ class GradingEngine:
 
     async def _grade_with_gemini_vision(self, prompt: str, image_path: str, max_points: float) -> Dict[str, Any]:
         """Grade using Gemini 2.0 Flash Vision."""
+        
+        # OpenRouter Path
+        if self.using_openrouter:
+            model_id = "google/gemini-2.0-flash-exp:free"
+            logger.info(f"Using OpenRouter Vision with model: {model_id}")
+            return await self._grade_with_vision(prompt, image_path, max_points, model_override=model_id)
+
+        # Direct Google SDK Path
         import PIL.Image
         
         # Load image for Gemini

@@ -14,7 +14,19 @@ class RubricParser:
     """Parse rubric documents into structured JSON format."""
     
     def __init__(self):
-        self.openai_client = OpenAI(api_key=settings.openai_api_key)
+        if settings.openrouter_api_key:
+            self.openai_client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=settings.openrouter_api_key,
+                default_headers={
+                    "HTTP-Referer": settings.site_url,
+                    "X-Title": settings.site_name,
+                }
+            )
+            self.using_openrouter = True
+        else:
+            self.openai_client = OpenAI(api_key=settings.openai_api_key)
+            self.using_openrouter = False
     
     async def parse_rubric(self, file_path: str) -> Dict[str, Any]:
         """
@@ -51,8 +63,10 @@ class RubricParser:
     async def _parse_with_gpt4(self, rubric_text: str) -> Dict[str, Any]:
         """Use GPT-4o with JSON mode to parse rubric text."""
         try:
+            model = "openai/gpt-4o" if self.using_openrouter else "gpt-4o"
+            
             response = self.openai_client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {
                         "role": "system",

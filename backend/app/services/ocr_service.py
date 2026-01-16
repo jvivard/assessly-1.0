@@ -20,8 +20,21 @@ class OCRService:
     """Handle OCR operations using Novita PaddleOCR-VL, GPT-4 Vision, and Google Cloud Vision."""
     
     def __init__(self):
-        self.openai_client = OpenAI(api_key=settings.openai_api_key)
-        
+        # Initialize AI Client (OpenRouter or Direct)
+        if settings.openrouter_api_key:
+            self.openai_client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=settings.openrouter_api_key,
+                default_headers={
+                    "HTTP-Referer": settings.site_url,
+                    "X-Title": settings.site_name,
+                }
+            )
+            self.using_openrouter = True
+        else:
+            self.openai_client = OpenAI(api_key=settings.openai_api_key)
+            self.using_openrouter = False
+            
         # Initialize Novita API client for PaddleOCR-VL
         self.novita_client = OpenAI(
             api_key=settings.novita_api_key,
@@ -85,9 +98,10 @@ class OCRService:
         """
         try:
             base64_image = self.encode_image(image_path)
+            model = "openai/gpt-4o" if self.using_openrouter else "gpt-4o"
             
             response = self.openai_client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {
                         "role": "user",

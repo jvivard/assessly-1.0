@@ -4,6 +4,11 @@
 OPENAI_API_KEY=sk-proj-abc123def456ghi78
 GEMINI_API_KEY=AIzaSy
 NOVITA_API_KEY=your_novita_api_key_here
+
+# OpenRouter (Hybrid AI)
+OPENROUTER_API_KEY=sk-or-v1-your_key_here
+SITE_URL=https://assessly.xyz
+SITE_NAME=Assessly
 DATABASE_URL=postgresql://postgres:password@
 
 # ❌ WRONG - Don't use quotes
