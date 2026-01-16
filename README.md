@@ -4,11 +4,15 @@ An intelligent grading system that automates the assessment of student worksheet
 
 ![Assessly Dashboard](https://img.shields.io/badge/Status-Production_Ready-green)
 ![License](https://img.shields.io/badge/License-MIT-blue)
+<img width="1813" height="700" alt="Screenshot 2025-10-27 030339" src="https://github.com/user-attachments/assets/cf31f9ba-3550-4640-8183-e00087f7aa49" />
+
+<img width="1868" height="942" alt="Screenshot 2025-10-27 030327" src="https://github.com/user-attachments/assets/a956514d-b82c-4841-9b7b-5f9970bc5301" />
+
 
 ## 🌟 Features
 
 - **📄 Multi-Format Support**: Upload PDFs and images for questions, rubrics, and student work
-- **🔍 Advanced OCR**: Extract text using GPT-4 Vision for mathematical content and Google Cloud Vision for text
+- **🔍 Advanced OCR**: Extract text using GPT-4 Vision for mathematical content and PaddleOCR-VL for text
 - **📋 Smart Rubric Parsing**: AI-powered rubric extraction and structured JSON conversion
 - **🎓 Dual AI Grading Engine**: 
   - GPT-4o for mathematical problems (high accuracy)
@@ -19,6 +23,8 @@ An intelligent grading system that automates the assessment of student worksheet
 - **🚀 Background Processing**: Celery-based async task queue with Redis
 - **📈 Task Monitoring**: Flower dashboard for job monitoring
 - **🎨 Modern UI**: Next.js frontend with Tailwind CSS and shadcn/ui components
+
+- <img width="1742" height="955" alt="Screenshot 2025-10-27 030429" src="https://github.com/user-attachments/assets/13213ccf-6b5e-4604-9633-23f73dbb0dee" />
 
 ## 🛠️ Tech Stack
 
@@ -401,7 +407,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For issues, questions, or feature requests:
 - Open an issue on [GitHub](https://github.com/jvivard/assessly/issues)
-- Contact: support@assessly.com
+- Contact: ggakavishnu@gmail.com
 
 ---
 
