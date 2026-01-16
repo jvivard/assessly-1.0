@@ -14,6 +14,7 @@ from app.services.ocr_service import ocr_service
 class GradingEngine:
     """Grade student work using AI models."""
     
+    def __init__(self):
         # Initialize AI Client (OpenRouter or Direct)
         self.using_openrouter = False
         
