@@ -371,12 +371,7 @@ createdb assessly
 - Implement CDN for static assets
 - Add load balancer for API servers
 
-### Monitoring
-- Application logging (Sentry, LogRocket)
-- API performance metrics
-- Cost tracking for AI API usage
-- Database query monitoring
-- Celery task monitoring via Flower
+
 
 ## 🤝 Contributing
 
