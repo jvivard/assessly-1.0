@@ -144,11 +144,7 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/assessly
 # Redis
 REDIS_URL=redis://localhost:6379/0
 
-# Application
-DEBUG=true
-UPLOAD_DIR=./uploads
-MAX_FILE_SIZE=10485760
-ALLOWED_ORIGINS=http://localhost:3000
+
 ```
 
 ## 📖 Usage
