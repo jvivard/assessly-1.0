@@ -224,17 +224,6 @@ Parameters:
 - subject: "math" | "science" | "english" | etc.
 ```
 
-### Parse Rubric
-```bash
-POST /api/upload/parse-rubric
-Content-Type: application/json
-
-{
-  "file_path": "./uploads/rubrics/uuid.pdf",
-  "name": "Math Quiz 1",
-  "subject": "math"
-}
-```
 
 ### Start Grading
 ```bash
