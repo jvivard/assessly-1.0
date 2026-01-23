@@ -205,11 +205,7 @@ assessly/
 │   ├── api-client.ts       # API communication
 │   └── utils.ts            # Helper functions
 ├── public/                 # Static assets
-├── styles/                 # Global styles
-├── .gitignore
-├── package.json
-└── README.md
-```
+
 
 ## 🔌 API Endpoints
 
