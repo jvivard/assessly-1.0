@@ -201,10 +201,6 @@ assessly/
 │   ├── dashboard-content.tsx
 │   ├── grading-canvas-*.tsx
 │   └── header.tsx
-├── lib/                    # Utility libraries
-│   ├── api-client.ts       # API communication
-│   └── utils.ts            # Helper functions
-├── public/                 # Static assets
 
 
 ## 🔌 API Endpoints
